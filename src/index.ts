@@ -70,9 +70,13 @@ async function createBucket ({ name, region }: { name?: string, region: string }
     return bucket
   } else {
     let bucketName: string = name
-    await s3.createBucket({
-      Bucket: name
-    }).promise()
+    const buckets = await s3.listBuckets().promise()
+    const existed = buckets.Buckets?.find(b => b.Name === 'bucketName') ? true : false;
+    if (!existed) {
+      await s3.createBucket({
+        Bucket: name
+      }).promise()
+    }
     return bucketName
   }
 }
